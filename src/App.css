@@ -8,41 +8,8 @@ body {
   min-height: 100vh;
 }
 
-.header {
-  background-color: #222;
-  color: white;
-  text-align: center;
-  padding: 30px;
-}
-
-.header h1 {
-  margin: 0;
-}
-
-.song-list {
-  max-width: 800px;
-  margin: 30px auto;
-  padding: 0 20px;
-}
-
-.song {
-  background-color: white;
-  padding: 20px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.song h2 {
-  margin-top: 0;
-  color: #222;
-}
-
-.song p {
-  color: #444;
-}
-
-.header p {
-  margin: 8px 0 0;
-  color: #ddd;
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px 20px;
 }
