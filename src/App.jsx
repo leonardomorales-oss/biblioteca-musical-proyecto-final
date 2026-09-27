@@ -4,7 +4,7 @@ import SearchBar from './components/SearchBar/SearchBar';
 import SearchResults from './components/SearchResults/SearchResults';
 import Library from './components/Library/Library';
 import useFetch from './hooks/useFetch';
-import './App.css';
+import { AppContainer, Content } from './styles/AppStyles';
 import { Routes, Route } from 'react-router-dom';
 import SongDetail from './components/SongDetail/SongDetail';
 
@@ -45,10 +45,10 @@ function App() {
   };
 
  return (
-  <div className="app">
+  <AppContainer>
     <Header />
 
-    <main className="content">
+    <Content>
       <Routes>
         <Route
           path="/"
@@ -71,6 +71,7 @@ function App() {
                     <SearchResults
                       songs={searchResults}
                       onAddSong={handleAddSong}
+                      library={library}
                     />
                   ) : (
                     <p>No se encontraron resultados.</p>
@@ -85,8 +86,8 @@ function App() {
 
         <Route path="/song/:id" element={<SongDetail />} />
       </Routes>
-    </main>
-  </div>
+    </Content>
+  </AppContainer>
 );
 }
 

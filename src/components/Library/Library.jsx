@@ -1,9 +1,9 @@
 import Song from '../Song/Song';
-import './styles.css';
+import { LibrarySection } from './styles';
 
 function Library({ songs }) {
   return (
-    <section className="library">
+    <LibrarySection>
       <h2>Mi biblioteca</h2>
 
       {songs.length === 0 ? (
@@ -19,7 +19,7 @@ function Library({ songs }) {
           />
         ))
       )}
-    </section>
+    </LibrarySection>
   );
 }
 

@@ -1,6 +1,6 @@
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
-import './styles.css';
+import { BackLink, DetailContainer } from './styles';
 
 function SongDetail() {
   const { id } = useParams();
@@ -29,23 +29,15 @@ function SongDetail() {
   }
 
   return (
-    <section className="song-detail">
+    <DetailContainer>
       <h2>{album.strAlbum}</h2>
 
-      <p>
-        <strong>Artista:</strong> {album.strArtist}
-      </p>
+      <p><strong>Artista:</strong> {album.strArtist}</p>
+      <p><strong>Álbum:</strong> {album.strAlbum}</p>
+      <p><strong>Año:</strong> {album.intYearReleased || 'No disponible'}</p>
 
-      <p>
-        <strong>Álbum:</strong> {album.strAlbum}
-      </p>
-
-      <p>
-        <strong>Año:</strong> {album.intYearReleased || 'No disponible'}
-      </p>
-
-      <Link to="/">Volver a resultados</Link>
-    </section>
+      <BackLink to="/">Volver a resultados</BackLink>
+    </DetailContainer>
   );
 }
 

@@ -1,11 +1,11 @@
-import './styles.css';
+import { HeaderContainer } from './styles';
 
 function Header() {
   return (
-    <header className="header">
+    <HeaderContainer>
       <h1>Biblioteca Musical</h1>
       <p>Mis canciones favoritas</p>
-    </header>
+    </HeaderContainer>
   );
 }
 

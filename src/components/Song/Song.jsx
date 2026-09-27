@@ -1,19 +1,36 @@
-import './styles.css';
+import { AddButton, SongContainer } from './styles';
 
-function Song({ title, artist, album, duration, onAdd, showAddButton = false }) {
+function Song({
+  title,
+  artist,
+  album,
+  duration,
+  onAdd,
+  showAddButton = false,
+  added = false,
+}) {
   return (
-    <div className="song">
+    <SongContainer>
       <h3>{title}</h3>
-      <p><strong>Artista:</strong> {artist}</p>
-      <p><strong>Álbum:</strong> {album}</p>
-      <p><strong>Duración:</strong> {duration}</p>
+
+      <p>
+        <strong>Artista:</strong> {artist}
+      </p>
+
+      <p>
+        <strong>Álbum:</strong> {album}
+      </p>
+
+      <p>
+        <strong>Duración:</strong> {duration}
+      </p>
 
       {showAddButton && (
-        <button onClick={onAdd}>
-          Agregar a mi biblioteca
-        </button>
+        <AddButton onClick={onAdd} $added={added}>
+          {added ? 'Agregada' : 'Agregar a mi biblioteca'}
+        </AddButton>
       )}
-    </div>
+    </SongContainer>
   );
 }
 
