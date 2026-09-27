@@ -1,7 +1,12 @@
+import { useDispatch, useSelector } from 'react-redux';
 import Song from '../Song/Song';
+import { addSong } from '../../redux/libraryActions';
 import { DetailLink, ResultItem, ResultsSection } from './styles';
 
-function SearchResults({ songs, onAddSong, library }) {
+function SearchResults({ songs }) {
+  const dispatch = useDispatch();
+  const library = useSelector((state) => state.library);
+
   return (
     <ResultsSection>
       <h2>Resultados de búsqueda</h2>
@@ -18,7 +23,7 @@ function SearchResults({ songs, onAddSong, library }) {
               duration={song.duration}
               showAddButton={true}
               added={added}
-              onAdd={() => onAddSong(song)}
+              onAdd={() => dispatch(addSong(song))}
             />
 
             <DetailLink to={`/song/${song.id}`}>

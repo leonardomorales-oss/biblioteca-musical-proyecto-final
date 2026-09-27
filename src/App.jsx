@@ -1,20 +1,21 @@
 import { useMemo, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
+
 import Header from './components/Header/Header';
 import SearchBar from './components/SearchBar/SearchBar';
 import SearchResults from './components/SearchResults/SearchResults';
 import Library from './components/Library/Library';
+import SongDetail from './components/SongDetail/SongDetail';
+
 import useFetch from './hooks/useFetch';
 import { AppContainer, Content } from './styles/AppStyles';
-import { Routes, Route } from 'react-router-dom';
-import SongDetail from './components/SongDetail/SongDetail';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('Oasis');
-  const [library, setLibrary] = useState([]);
 
   const url = searchTerm
-  ? `https://www.theaudiodb.com/api/v1/json/123/searchalbum.php?s=${encodeURIComponent(searchTerm)}`
-  : null;
+    ? `https://www.theaudiodb.com/api/v1/json/123/searchalbum.php?s=${encodeURIComponent(searchTerm)}`
+    : null;
 
   const { data, loading, error, retry } = useFetch(url);
 
@@ -36,59 +37,54 @@ function App() {
     setSearchTerm(artist);
   };
 
-  const handleAddSong = (song) => {
-    const alreadyExists = library.some((item) => item.id === song.id);
+  return (
+    <AppContainer>
+      <Header />
 
-    if (!alreadyExists) {
-      setLibrary((currentLibrary) => [...currentLibrary, song]);
-    }
-  };
+      <Content>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <SearchBar onSearch={handleSearch} />
 
- return (
-  <AppContainer>
-    <Header />
+                {loading && <p>Cargando...</p>}
 
-    <Content>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <SearchBar onSearch={handleSearch} />
+                {error && (
+                  <div>
+                    <p>
+                      Hubo un problema al cargar los datos. Intenta nuevamente.
+                    </p>
+                    <button onClick={retry}>
+                      Reintentar
+                    </button>
+                  </div>
+                )}
 
-              {loading && <p>Cargando...</p>}
+                {!loading && !error && (
+                  <>
+                    {searchResults.length > 0 ? (
+                      <SearchResults songs={searchResults} />
+                    ) : (
+                      <p>No se encontraron resultados.</p>
+                    )}
 
-              {error && (
-                <div>
-                  <p>Hubo un problema al cargar los datos. Intenta nuevamente.</p>
-                  <button onClick={retry}>Reintentar</button>
-                </div>
-              )}
+                    <Library />
+                  </>
+                )}
+              </>
+            }
+          />
 
-              {!loading && !error && (
-                <>
-                  {searchResults.length > 0 ? (
-                    <SearchResults
-                      songs={searchResults}
-                      onAddSong={handleAddSong}
-                      library={library}
-                    />
-                  ) : (
-                    <p>No se encontraron resultados.</p>
-                  )}
-
-                  <Library songs={library} />
-                </>
-              )}
-            </>
-          }
-        />
-
-        <Route path="/song/:id" element={<SongDetail />} />
-      </Routes>
-    </Content>
-  </AppContainer>
-);
+          <Route
+            path="/song/:id"
+            element={<SongDetail />}
+          />
+        </Routes>
+      </Content>
+    </AppContainer>
+  );
 }
 
 export default App;
