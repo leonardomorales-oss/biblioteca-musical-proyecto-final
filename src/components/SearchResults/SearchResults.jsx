@@ -1,10 +1,13 @@
 import { useDispatch, useSelector } from 'react-redux';
+
 import Song from '../Song/Song';
-import { addSong } from '../../redux/libraryActions';
+import { addSong } from '../../redux/slices/librarySlice';
 import { DetailLink, ResultItem, ResultsSection } from './styles';
 
-function SearchResults({ songs }) {
+function SearchResults() {
   const dispatch = useDispatch();
+
+  const songs = useSelector((state) => state.search.results);
   const library = useSelector((state) => state.library);
 
   return (

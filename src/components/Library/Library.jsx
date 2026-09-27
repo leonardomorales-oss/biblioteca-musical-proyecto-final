@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import Song from '../Song/Song';
-import { removeSong } from '../../redux/libraryActions';
+import { removeSong } from '../../redux/slices/librarySlice';
 import { LibrarySection, RemoveButton } from './styles';
 
 function Library() {

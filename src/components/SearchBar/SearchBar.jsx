@@ -1,8 +1,14 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { fetchSongs } from '../../redux/slices/searchSlice';
 import { SearchButton, SearchForm, SearchInput } from './styles';
 
-function SearchBar({ onSearch }) {
+function SearchBar() {
   const [value, setValue] = useState('');
+  const dispatch = useDispatch();
+
+  const loading = useSelector((state) => state.search.loading);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -10,7 +16,7 @@ function SearchBar({ onSearch }) {
     const artist = value.trim();
 
     if (artist) {
-      onSearch(artist);
+      dispatch(fetchSongs(artist));
     }
   };
 
@@ -23,7 +29,9 @@ function SearchBar({ onSearch }) {
         placeholder="Busca un artista, por ejemplo Oasis"
       />
 
-      <SearchButton type="submit">Buscar</SearchButton>
+      <SearchButton type="submit" disabled={loading}>
+        {loading ? 'Buscando...' : 'Buscar'}
+      </SearchButton>
     </SearchForm>
   );
 }
