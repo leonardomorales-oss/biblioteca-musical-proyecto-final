@@ -1,62 +1,93 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Header from './components/Header/Header';
+import SearchBar from './components/SearchBar/SearchBar';
 import SearchResults from './components/SearchResults/SearchResults';
 import Library from './components/Library/Library';
+import useFetch from './hooks/useFetch';
 import './App.css';
+import { Routes, Route } from 'react-router-dom';
+import SongDetail from './components/SongDetail/SongDetail';
 
 function App() {
-  const [searchResults] = useState([
-    {
-      id: 1,
-      title: 'Blinding Lights',
-      artist: 'The Weeknd',
-      album: 'After Hours',
-      duration: '3:20',
-    },
-    {
-      id: 2,
-      title: 'Save Your Tears',
-      artist: 'The Weeknd',
-      album: 'After Hours',
-      duration: '3:35',
-    },
-    {
-      id: 3,
-      title: 'As It Was',
-      artist: 'Harry Styles',
-      album: "Harry's House",
-      duration: '2:47',
-    },
-  ]);
-
+  const [searchTerm, setSearchTerm] = useState('Oasis');
   const [library, setLibrary] = useState([]);
+
+  const url = searchTerm
+  ? `https://www.theaudiodb.com/api/v1/json/123/searchalbum.php?s=${encodeURIComponent(searchTerm)}`
+  : null;
+
+  const { data, loading, error, retry } = useFetch(url);
+
+  const searchResults = useMemo(() => {
+    if (!data?.album) {
+      return [];
+    }
+
+    return data.album.map((album) => ({
+      id: album.idAlbum,
+      title: album.strAlbum,
+      artist: album.strArtist,
+      album: album.strAlbum,
+      duration: 'No disponible',
+    }));
+  }, [data]);
+
+  const handleSearch = (artist) => {
+    setSearchTerm(artist);
+  };
 
   const handleAddSong = (song) => {
     const alreadyExists = library.some((item) => item.id === song.id);
 
     if (!alreadyExists) {
-      setLibrary([...library, song]);
+      setLibrary((currentLibrary) => [...currentLibrary, song]);
     }
   };
 
-  useEffect(() => {
-    console.log('La biblioteca se actualizó:', library);
-  }, [library]);
+ return (
+  <div className="app">
+    <Header />
 
-  return (
-    <div className="app">
-      <Header />
+    <main className="content">
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <SearchBar onSearch={handleSearch} />
 
-      <main className="content">
-        <SearchResults
-          songs={searchResults}
-          onAddSong={handleAddSong}
+              {loading && <p>Cargando...</p>}
+
+              {error && (
+                <div>
+                  <p>Hubo un problema al cargar los datos. Intenta nuevamente.</p>
+                  <button onClick={retry}>Reintentar</button>
+                </div>
+              )}
+
+              {!loading && !error && (
+                <>
+                  {searchResults.length > 0 ? (
+                    <SearchResults
+                      songs={searchResults}
+                      onAddSong={handleAddSong}
+                    />
+                  ) : (
+                    <p>No se encontraron resultados.</p>
+                  )}
+
+                  <Library songs={library} />
+                </>
+              )}
+            </>
+          }
         />
 
-        <Library songs={library} />
-      </main>
-    </div>
-  );
+        <Route path="/song/:id" element={<SongDetail />} />
+      </Routes>
+    </main>
+  </div>
+);
 }
 
 export default App;
