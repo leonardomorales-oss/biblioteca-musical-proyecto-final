@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import axios from 'axios';
 
 function useFetch(url) {
   const [data, setData] = useState(null);
@@ -25,19 +26,19 @@ function useFetch(url) {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(url, {
+        const response = await axios.get(url, {
           signal: controller.signal,
         });
 
-        if (!response.ok) {
-          throw new Error('No se pudo obtener la información');
-        }
-
-        const result = await response.json();
-        setData(result);
+        setData(response.data);
       } catch (err) {
-        if (err.name !== 'AbortError') {
-          setError(err.message);
+        if (
+          err.name !== 'CanceledError' &&
+          err.code !== 'ERR_CANCELED'
+        ) {
+          setError(
+            err.message || 'No se pudo obtener la información',
+          );
         }
       } finally {
         if (!controller.signal.aborted) {

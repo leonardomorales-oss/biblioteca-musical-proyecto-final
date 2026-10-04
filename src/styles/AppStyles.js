@@ -5,7 +5,12 @@ export const AppContainer = styled.div`
 `;
 
 export const Content = styled.main`
-  max-width: 900px;
+  width: min(100% - 32px, 1000px);
   margin: 0 auto;
-  padding: 30px 20px;
+  padding: 32px 0;
+
+  @media (max-width: 600px) {
+    width: min(100% - 20px, 1000px);
+    padding: 20px 0;
+  }
 `;

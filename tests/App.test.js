@@ -7,9 +7,17 @@ import { configureStore } from '@reduxjs/toolkit';
 import App from '../src/App';
 import libraryReducer from '../src/redux/slices/librarySlice';
 import searchReducer from '../src/redux/slices/searchSlice';
+import audioDbApi from '../src/api/audioDbApi';
 import theme from '../src/styles/theme';
 
-function renderApp() {
+jest.mock('../src/api/audioDbApi', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+  },
+}));
+
+function renderApp(initialEntries = ['/']) {
   const store = configureStore({
     reducer: {
       library: libraryReducer,
@@ -20,7 +28,7 @@ function renderApp() {
   render(
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        <MemoryRouter>
+        <MemoryRouter initialEntries={initialEntries}>
           <App />
         </MemoryRouter>
       </ThemeProvider>
@@ -31,29 +39,26 @@ function renderApp() {
 }
 
 beforeEach(() => {
-  global.fetch = jest.fn(() =>
-    Promise.resolve({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          album: [
-            {
-              idAlbum: '1',
-              strAlbum: 'Definitely Maybe',
-              strArtist: 'Oasis',
-            },
-          ],
-        }),
-    }),
-  );
+  audioDbApi.get.mockResolvedValue({
+    data: {
+      album: [
+        {
+          idAlbum: '2113118',
+          strAlbum: 'Heathen Chemistry',
+          strArtist: 'Oasis',
+          intYearReleased: '2002',
+        },
+      ],
+    },
+  });
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  jest.clearAllMocks();
 });
 
 describe('App', () => {
-  test('renderiza Header, SearchBar y Library', () => {
+  test('renderiza Header, navegación y SearchBar', () => {
     renderApp();
 
     expect(
@@ -63,13 +68,19 @@ describe('App', () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByPlaceholderText(/busca un artista/i),
+      screen.getByRole('link', {
+        name: /inicio/i,
+      }),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole('heading', {
+      screen.getByRole('link', {
         name: /mi biblioteca/i,
       }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByPlaceholderText(/busca un artista/i),
     ).toBeInTheDocument();
   });
 
@@ -91,13 +102,13 @@ describe('App', () => {
     await waitFor(() => {
       expect(
         screen.getByRole('heading', {
-          name: 'Definitely Maybe',
+          name: 'Heathen Chemistry',
         }),
       ).toBeInTheDocument();
     });
   });
 
-  test('agrega una canción a la biblioteca', async () => {
+  test('agrega una canción a la biblioteca y navega a la página de biblioteca', async () => {
     renderApp();
 
     const input = screen.getByPlaceholderText(/busca un artista/i);
@@ -118,11 +129,24 @@ describe('App', () => {
 
     fireEvent.click(addButton);
 
-    expect(
-      screen.getAllByRole('heading', {
-        name: 'Definitely Maybe',
+    fireEvent.click(
+      screen.getByRole('link', {
+        name: /mi biblioteca/i,
       }),
-    ).toHaveLength(2);
+    );
+
+    expect(
+      screen.getByRole('heading', {
+        name: /mi biblioteca/i,
+        level: 1,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('heading', {
+        name: 'Heathen Chemistry',
+      }),
+    ).toBeInTheDocument();
 
     expect(
       screen.getByRole('button', {

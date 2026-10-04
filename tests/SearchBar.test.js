@@ -5,7 +5,15 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import SearchBar from '../src/components/SearchBar/SearchBar';
 import searchReducer from '../src/redux/slices/searchSlice';
+import audioDbApi from '../src/api/audioDbApi';
 import theme from '../src/styles/theme';
+
+jest.mock('../src/api/audioDbApi', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+  },
+}));
 
 function renderSearchBar() {
   const store = configureStore({
@@ -26,19 +34,15 @@ function renderSearchBar() {
 }
 
 beforeEach(() => {
-  global.fetch = jest.fn(() =>
-    Promise.resolve({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          album: [],
-        }),
-    }),
-  );
+  audioDbApi.get.mockResolvedValue({
+    data: {
+      album: [],
+    },
+  });
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  jest.clearAllMocks();
 });
 
 describe('SearchBar', () => {
@@ -75,7 +79,7 @@ describe('SearchBar', () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled();
+      expect(audioDbApi.get).toHaveBeenCalled();
     });
   });
 
@@ -91,7 +95,7 @@ describe('SearchBar', () => {
     fireEvent.submit(input.closest('form'));
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalled();
+      expect(audioDbApi.get).toHaveBeenCalled();
     });
   });
 });

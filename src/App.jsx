@@ -10,6 +10,9 @@ import SongDetail from './components/SongDetail/SongDetail';
 import { fetchSongs } from './redux/slices/searchSlice';
 import { AppContainer, Content } from './styles/AppStyles';
 
+import LibraryPage from './pages/LibraryPage';
+import Navigation from './components/Navigation/Navigation';
+
 function App() {
   const dispatch = useDispatch();
 
@@ -24,6 +27,7 @@ function App() {
   return (
     <AppContainer>
       <Header />
+      <Navigation />
 
       <Content>
         <Routes>
@@ -32,6 +36,7 @@ function App() {
             element={
               <>
                 <SearchBar />
+
 
                 {loading && <p>Cargando...</p>}
 
@@ -55,8 +60,6 @@ function App() {
                     ) : (
                       <p>Realiza una búsqueda para ver resultados.</p>
                     )}
-
-                    <Library />
                   </>
                 )}
               </>
@@ -67,7 +70,14 @@ function App() {
             path="/song/:id"
             element={<SongDetail />}
           />
+
+          <Route
+            path="/library"
+            element={<LibraryPage />}
+          />
         </Routes>
+
+
       </Content>
     </AppContainer>
   );

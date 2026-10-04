@@ -1,20 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import audioDbApi from '../../api/audioDbApi';
 
 export const fetchSongs = createAsyncThunk(
   'search/fetchSongs',
   async (artist, { rejectWithValue }) => {
     try {
-      const url = `https://www.theaudiodb.com/api/v1/json/123/searchalbum.php?s=${encodeURIComponent(artist)}`;
+      const response = await audioDbApi.get('/searchalbum.php', {
+        params: {
+          s: artist,
+        },
+      });
 
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error('No se pudo obtener la información');
-      }
-
-      const data = await response.json();
-
-      const results = (data.album || []).map((album) => ({
+      const results = (response.data.album || []).map((album) => ({
         id: album.idAlbum,
         title: album.strAlbum,
         artist: album.strArtist,

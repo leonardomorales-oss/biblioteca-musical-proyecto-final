@@ -1,9 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { ThemeProvider } from 'styled-components';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import axios from 'axios';
 
 import SongDetail from '../src/components/SongDetail/SongDetail';
 import theme from '../src/styles/theme';
+
+jest.mock('axios');
 
 function renderSongDetail() {
   render(
@@ -18,31 +21,27 @@ function renderSongDetail() {
 }
 
 beforeEach(() => {
-  global.fetch = jest.fn(() =>
-    Promise.resolve({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          album: [
-            {
-              idAlbum: '123',
-              strAlbum: 'Definitely Maybe',
-              strArtist: 'Oasis',
-              intYearReleased: '1994',
-            },
-          ],
-        }),
-    }),
-  );
+  axios.get.mockResolvedValue({
+    data: {
+      album: [
+        {
+          idAlbum: '123',
+          strAlbum: 'Definitely Maybe',
+          strArtist: 'Oasis',
+          intYearReleased: '1994',
+        },
+      ],
+    },
+  });
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  jest.clearAllMocks();
 });
 
 describe('SongDetail', () => {
   test('muestra el estado de carga', () => {
-    global.fetch = jest.fn(
+    axios.get.mockImplementation(
       () => new Promise(() => {}),
     );
 
@@ -69,10 +68,8 @@ describe('SongDetail', () => {
   });
 
   test('muestra mensaje de error cuando falla la petición', async () => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: false,
-      }),
+    axios.get.mockRejectedValue(
+      new Error('Error de red'),
     );
 
     renderSongDetail();
@@ -91,15 +88,11 @@ describe('SongDetail', () => {
   });
 
   test('muestra mensaje si no existe información del álbum', async () => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            album: null,
-          }),
-      }),
-    );
+    axios.get.mockResolvedValue({
+      data: {
+        album: null,
+      },
+    });
 
     renderSongDetail();
 
