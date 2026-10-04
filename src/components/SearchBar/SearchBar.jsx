@@ -21,15 +21,28 @@ function SearchBar() {
   };
 
   return (
-    <SearchForm onSubmit={handleSubmit}>
+    <SearchForm
+      onSubmit={handleSubmit}
+      role="search"
+      aria-label="Buscador de artistas"
+    >
+      <label htmlFor="artist-search">
+        Buscar artista
+      </label>
+
       <SearchInput
+        id="artist-search"
         type="text"
         value={value}
         onChange={(event) => setValue(event.target.value)}
         placeholder="Busca un artista, por ejemplo Oasis"
+        aria-label="Nombre del artista"
       />
 
-      <SearchButton type="submit" disabled={loading}>
+      <SearchButton
+        type="submit"
+        disabled={loading}
+      >
         {loading ? 'Buscando...' : 'Buscar'}
       </SearchButton>
     </SearchForm>
